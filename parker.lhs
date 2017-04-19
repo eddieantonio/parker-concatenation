@@ -1,15 +1,22 @@
 \documentclass{article}
 
+\usepackage[no-math]{fontspec}  % Allow arbitrary Unicode
+
 \usepackage{listings}
 \usepackage{mathtools}
+\usepackage{MnSymbol}
+\usepackage{newunicodechar}
 \usepackage{url}
 
+% newunicodechar: define the parker square ■
+\newunicodechar{■}{\ensuremath\filledmedsquare}
 % mathtools: \floor{}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 % Haskell code environment
-\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small}}{}
+\lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small, literate={+}{{$+$}}1 {/}{{$/$}}1 {*}{{$*$}}1 {->}{{$\rightarrow$}}2 {=>}{{$\Rightarrow$}}2}}{}
+\lstloadlanguages{Haskell}
 
 \newcommand{\logten}{\ensuremath{\log_{10}}}
 
@@ -19,7 +26,7 @@
 \begin{document}
 \maketitle
 
-The goal is to define an operator, \(a || b\) such that the result is the
+The goal is to define an operator, \(a ■ b\) such that the result is the
 concatenation of (base-10) digits of each of its operands.
 
 \section{Implementation}
@@ -33,7 +40,7 @@ mathematically, how many digits are in the right-hand operand.
 First, we wish to determine how many digits there are in a number. This will
 indicate how many times we should multiply \(a\) by ten.
 \[
-    digits(x) = \floor{\log_{10} x} + 1
+    digits(x) = \floor{\logten x} + 1
 \]
 
 \begin{code}
@@ -59,35 +66,23 @@ with the digits of the right-side operator:\[
 \]
 
 Because \verb@||@ is already a default Haskell operator, we mustn't override
-it! Instead, we shall invent a new infix operator. To be extra obnoxious, not
-only will we define a new operator in Haskell (yuck!), but it will bear the
-appearance of an extraordinarily kawaii cat emoticon: \verb|=^.^=| (the cat is
-for ``concatenation'').
+it! Instead, we shall invent a new infix operator: ■. In true
+\verb|#ParkerSquare| spirit, I could not get it to typeset quite perfectly in
+\LaTeX, however, the following code compiles fine in GHC.  I gave it a go.
 
 \begin{code}
-(=^.^=) :: Integral a => a -> a -> a
-a =^.^= b = a * 10 ^ (digits b) + b
+(■) :: Integral a => a -> a -> a
+a ■ b = a * 10 ^ (digits b) + b
 \end{code}
 
 
-\section*{Appendix: Main function}
+\section{Main}
 
 This computes the solution to the 10,958 problem~\cite{parker}.
 
 \begin{code}
 main = putStrLn $ show solution
-    where solution = 1 * 2 =^.^= 3 + ((4 * 5 * 6) =^.^= 7 + 8) * 9
-\end{code}
-
-
-\section*{Appendix: Defining \(\log_{10}\)}
-
-For strange floating point reasons, \verb|log10 1000| is less than 3, but
-we'll ignore that for now. The alternative solution is to use primitive
-values, but that's a pain.
-
-\begin{code}
-log10 = logBase 10
+    where solution = 1 * 2 ■ 3 + ((4 * 5 * 6) ■ 7 + 8) * 9
 \end{code}
 
 
@@ -101,6 +96,17 @@ cat base a b = a * base ^ (places b) + b
     where places d = floor(log b' / log base') + 1
           base' = fromIntegral base
           b' = fromIntegral b
+\end{code}
+
+
+\section*{Appendix: Defining \logten}
+
+For strange floating point reasons, \verb|log10 1000| is less than 3, but
+we'll ignore that for now. The alternative solution is to use primitive
+values, but that's a pain.
+
+\begin{code}
+log10 = logBase 10
 \end{code}
 
 

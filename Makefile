@@ -4,4 +4,4 @@ all: parker.pdf parker
 	ghc $<
 
 %.pdf: %.lhs
-	xelatex -halt-on-error -interaction=nonstopmode $<
+	latexmk -xelatex -halt-on-error -interaction=nonstopmode $<
