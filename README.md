@@ -6,10 +6,13 @@ Haskell. Note: I'm not very good at Haskell. Regardless, I gave it the
 ol' Parker Square of a try.
 
 ```haskell
-*Main> :l parker
-*Main> 1 * 2 ^-^ 3 + ((4 * 5 * 6) ^-^ 7 + 8) * 9
+Prelude> :l parker
+*Main> 1 * 2 =^.^= 3 + ((4 * 5 * 6) =^.^= 7 + 8) * 9
 10958
 ```
+
+(The operator is `=^.^=` because I didn't want to override Haskell's
+`||` operator).
 
  - [View the source][source]
  - [Read the write-up][doc]
