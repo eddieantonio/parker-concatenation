@@ -33,12 +33,13 @@ mathematically, how many digits are in the right-hand operand.
 First, we wish to determine how many digits there are in a number. This will
 indicate how many times we should multiply \(a\) by ten.
 \[
-    digits(x) = 1 + \floor{\log_{10} x}
+    digits(x) = \floor{\log_{10} x} + 1
 \]
 
 \begin{code}
 digits :: Integral a => a -> a
-digits i = 1 + (floor . log10 . fromIntegral $ i)
+digits i = floor(log10 x) + 1
+    where x = fromIntegral i
 \end{code}
 
 \subsection{Concatenation}
@@ -60,11 +61,12 @@ with the digits of the right-side operator:\[
 Because \verb@||@ is already a default Haskell operator, we mustn't override
 it! Instead, we shall invent a new infix operator. To be extra obnoxious, not
 only will we define a new operator in Haskell (yuck!), but it will bear the
-appearance of an extraordinarily kawaii anime emoticon: \verb|^-^|.
+appearance of an extraordinarily kawaii cat emoticon: \verb|=^.^=| (the cat is
+for ``concatenation'').
 
 \begin{code}
-(^-^) :: Integral a => a -> a -> a
-a ^-^ b = a * 10 ^ (digits b) + b
+(=^.^=) :: Integral a => a -> a -> a
+a =^.^= b = a * 10 ^ (digits b) + b
 \end{code}
 
 
@@ -74,7 +76,7 @@ This computes the solution to the 10,958 problem~\cite{parker}.
 
 \begin{code}
 main = putStrLn $ show solution
-    where solution = 1 * 2 ^-^ 3 + ((4 * 5 * 6) ^-^ 7 + 8) * 9
+    where solution = 1 * 2 =^.^= 3 + ((4 * 5 * 6) =^.^= 7 + 8) * 9
 \end{code}
 
 
@@ -87,6 +89,20 @@ values, but that's a pain.
 \begin{code}
 log10 = logBase 10
 \end{code}
+
+
+\section*{Appendix: Generalization for any base}
+
+The generalized concatenation operator, defined for any base is as follows:
+
+\begin{code}
+cat :: Integral a => a -> a -> a -> a
+cat base a b = a * base ^ (places b) + b
+    where places d = floor(log b' / log base') + 1
+          base' = fromIntegral base
+          b' = fromIntegral b
+\end{code}
+
 
 \begin{thebibliography}{9}
 
