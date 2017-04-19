@@ -21,8 +21,11 @@
 
 \section{Implementation}
 
+We'll need \texttt{integerLogBase}, which is a special GHC thing.
+
 \begin{code}
 {-# LANGUAGE MagicHash #-}
+import GHC.Prim ( coerce, Int#, tagToEnum#, dataToTag# )
 import GHC.Integer.Logarithms ( integerLogBase# )
 \end{code}
 
@@ -35,7 +38,7 @@ Digits is defines as:\[
 
 \begin{code}
 digits :: (Integral a) => a -> a
-digits i = succ . floor . log10 . fromIntegral $ i
+digits i = 1 + (floor . log10 $ i)
 \end{code}
 
 Temporary:
@@ -68,8 +71,13 @@ Now we have to \textbf{explicitly} define \(\logten\) as being defined on
 \texttt{Double}.
 
 \begin{code}
-log10 :: Double -> Double
-log10 y = log y / ln10
+log10 :: Int -> Int
+log10 i = let
+            im
+            I# $ integerLogBase# 10# im
+        in (coerce answer) :: Int
+
+
 \end{code}
 
 \end{document}
