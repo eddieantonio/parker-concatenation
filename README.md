@@ -3,16 +3,16 @@ Defining Parker's Concatenation
 
 Inspired by [Numberphile], I defined a concatenation operator in
 Haskell. Note: I'm not very good at Haskell. Regardless, I gave it the
-ol' Parker Square of a try.
+ol' Parker Square of a try. Consequently, instead of defining the
+operator as `||`, I defined it as the Parker Square: ■.
 
 ```haskell
 Prelude> :l parker
-*Main> 1 * 2 =^.^= 3 + ((4 * 5 * 6) =^.^= 7 + 8) * 9
+[1 of 1] Compiling Main             ( parker.lhs, interpreted )
+Ok, modules loaded: Main.
+*Main>  1 * 2 ■ 3 + ((4 * 5 * 6) ■ 7 + 8) * 9
 10958
 ```
-
-(The operator is `=^.^=` because I didn't want to override Haskell's
-`||` operator).
 
  - [View the source][source]
  - [Read the write-up][doc]
