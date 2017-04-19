@@ -19,65 +19,85 @@
 \begin{document}
 \maketitle
 
+The goal is to define an operator, \(a || b\) such that the result is the
+concatenation of (base-10) digits of each of its operands.
+
 \section{Implementation}
 
-We'll need \texttt{integerLogBase}, which is a special GHC thing.
+The implementation shifts the left-hand operand \(a\) by the number of
+digits in the right-hand operand \(b\). To do this, we must determine,
+mathematically, how many digits are in the right-hand operand.
 
-\begin{code}
-{-# LANGUAGE MagicHash #-}
-import GHC.Prim ( coerce, Int#, tagToEnum#, dataToTag# )
-import GHC.Integer.Logarithms ( integerLogBase# )
-\end{code}
+\subsection{Digits}
 
 First, we wish to determine how many digits there are in a number. This will
 indicate how many times we should multiply \(a\) by ten.
-
-Digits is defines as:\[
+\[
     digits(x) = 1 + \floor{\log_{10} x}
 \]
 
 \begin{code}
-digits :: (Integral a) => a -> a
-digits i = 1 + (floor . log10 $ i)
+digits :: Integral a => a -> a
+digits i = 1 + (floor . log10 . fromIntegral $ i)
 \end{code}
 
-Temporary:
+\subsection{Concatenation}
+
+Now that we can get the number of digits of an arbitrary number, we can
+implement the operator.
+
+To shift a base-10 number by some number of digits \(d\) to
+the left, multiply the number by ten to the number of digits:\[
+    a \times 10^{d}
+\]
+
+Since this operation effectively fills the right-hand side with zeros, a
+simple addition with the right-hand operand will effectively replace the zeros
+with the digits of the right-side operator:\[
+    a \times 10^{digits(b)} + b
+\]
+
+Because \verb@||@ is already a default Haskell operator, we mustn't override
+it! Instead, we shall invent a new infix operator. To be extra obnoxious, not
+only will we define a new operator in Haskell (yuck!), but it will bear the
+appearance of an extraordinarily kawaii anime emoticon: \verb|^-^|.
 
 \begin{code}
-pconcat :: Integral a => a -> a -> a
-pconcat a b = undefined
+(^-^) :: Integral a => a -> a -> a
+a ^-^ b = a * 10 ^ (digits b) + b
 \end{code}
 
 
 \section*{Appendix: Main function}
 
+This computes the solution to the 10,958 problem~\cite{parker}.
+
 \begin{code}
-main = putStrLn $ show (6 `pconcat` 1)
+main = putStrLn $ show solution
+    where solution = 1 * 2 ^-^ 3 + ((4 * 5 * 6) ^-^ 7 + 8) * 9
 \end{code}
 
 
-\section*{Appendix: \(\log_{10}\)}
+\section*{Appendix: Defining \(\log_{10}\)}
 
-This one gets weird. In order to get decent accuracy for \(\log_{10}\),  we
-need to define double precision of \(\ln 10\) elsewhere, then use it. See
-\url{http://stackoverflow.com/a/11293064/6626414}.
-
-\begin{code}
-ln10 :: Double
-ln10 = log 10
-\end{code}
-
-Now we have to \textbf{explicitly} define \(\logten\) as being defined on
-\texttt{Double}.
+For strange floating point reasons, \verb|log10 1000| is less than 3, but
+we'll ignore that for now. The alternative solution is to use primitive
+values, but that's a pain.
 
 \begin{code}
-log10 :: Int -> Int
-log10 i = let
-            im
-            I# $ integerLogBase# 10# im
-        in (coerce answer) :: Int
-
-
+log10 = logBase 10
 \end{code}
+
+\begin{thebibliography}{9}
+
+\bibitem{parker}
+    Matt Parker,
+    \textit{A 10,958 Solution}.
+    Numberphile,
+    Ed:\ Brady Haran,
+    2017.
+    Available:\ \url{https://www.youtube.com/watch?v=pasyRUj7UwM}.
+
+\end{thebibliography}
 
 \end{document}

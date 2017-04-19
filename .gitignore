@@ -251,4 +251,5 @@ TSWLatexianTemp*
 
 # End of https://www.gitignore.io/api/latex
 
-parker.pdf
+# Ignore outputs
+parker
